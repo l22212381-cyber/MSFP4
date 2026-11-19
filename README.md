@@ -1,3 +1,4 @@
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=l22212381-cyber/MSFP4)
 # Práctica 4 — Modelado y control del sistema endocrino
 
 Repositorio académico de la asignatura **Modelado de Sistemas Fisiológicos**, del programa de **Ingeniería Biomédica** del Tecnológico Nacional de México / Instituto Tecnológico de Tijuana. En esta práctica se desarrolla una **analogía eléctrica fenomenológica** del sistema endocrino para estudiar la secreción, el transporte, el almacenamiento temporal, la utilización y la respuesta de una señal hormonal mediante un circuito de segundo orden.
@@ -616,46 +617,7 @@ La ganancia proporcional, la integral y la derivativa se acompañan del parámet
 
 En **Visual Studio Code** se implementan las funciones de transferencia para ambas condiciones, se obtiene la respuesta al escalón en $t\in[0,10]$ y se incorporan las ganancias determinadas en Simulink para simular el sistema tratado.
 
-### Archivo Python aportado: `Bonilla22212381.py`
-
-El código de la práctica utiliza `numpy`, `matplotlib` y `control` y configura un escalón unitario para $0\le t\le10\,\mathrm{s}$, con un paso de muestreo de $5\times10^{-5}\,\mathrm{s}$ (200 001 puntos). Define ambas plantas mediante la función `G(C, R2)`, construye un PID con derivada filtrada mediante $k_P$, $k_I$, $k_D$ y $N$, y forma el lazo cerrado con `ctrl.feedback(..., sign=-1)`. La figura se guarda con el nombre **`Caso.pdf`**.
-
-Las partes centrales del archivo recibido son:
-
-```python
-kP, kI, kD, N = 1298.6989, 312346.1725, 0.17968, 4964.0941
-R1, L = 1e3, 0.1
-
-def G(C, R2):
-    return ctrl.tf([L, R2], [R1 * L * C, L + R1 * R2 * C, R1 + R2])
-
-control = G(1e-6, 100e3)
-caso = G(1e-3, 1e3)
-s = ctrl.tf("s")
-PID = kP + kI / s + kD * N * s / (s + N)
-sysPID = ctrl.feedback(ctrl.series(PID, caso), 1, sign=-1)
 ```
-
-**Revisión importante del código recibido:** después de definir la entrada en `Ve`, el archivo sobrescribe `Ve` con la respuesta del control; luego aplica esa respuesta al caso y finalmente usa la respuesta del caso como entrada de `sysPID`. Esto produce una **cascada de simulaciones**, diferente de la comparación en paralelo entre control, caso y caso tratado solicitada en el instructivo. Además, en las llamadas de `ax.plot` se repite `Ve` con etiquetas de otras señales, y aparecen etiquetas de ejes con variables incorrectas.
-
-Para comparar correctamente las tres respuestas bajo la misma entrada, conservando la respuesta del control como **referencia del sistema tratado**, se recomienda reemplazar esas llamadas por:
-
-```python
-entrada = np.ones(n)
-_, salida_control = ctrl.forced_response(control, t, entrada)
-_, salida_caso = ctrl.forced_response(caso, t, entrada)
-_, tratamiento = ctrl.forced_response(sysPID, t, salida_control)
-
-ax.plot(t, entrada, label=r"$V_e(t)$: Entrada")
-ax.plot(t, salida_control, label=r"$V_{s,\mathrm{control}}(t)$")
-ax.plot(t, salida_caso, label=r"$V_{s,\mathrm{caso}}(t)$")
-ax.plot(t, tratamiento, label=r"$V_{s,\mathrm{PID}}(t)$: Tratamiento")
-ax.set_xlabel(r"$t$ [s]")
-ax.set_ylabel(r"$V_s(t)$ [V]")
-```
-
-Este fragmento es una **corrección sugerida**, no una afirmación de que el script original ya la incorpora. El archivo original permanece sin modificaciones.
-
 ### Ejemplo reproducible: lazo abierto
 
 ```python
@@ -741,10 +703,6 @@ A partir de las ganancias obtenidas con **Tune**, calcular los resistores y capa
 ### 12.4. Implementación experimental en lazo cerrado
 
 Construir el controlador analógico, conectarlo a la planta caso y configurar correctamente la alimentación de los amplificadores operacionales de acuerdo con el diseño de laboratorio. Aplicar nuevamente la entrada de prueba y registrar las respuestas del caso sin controlador y del caso controlado. Verificar conexiones, polaridades y límites de voltaje antes de energizar el montaje.
-
-### 12.5. Fuentes de discrepancia
-
-Al comparar experimento y simulación, analizar tolerancias de resistencias, capacitores e inductores; resistencia interna y comportamiento no ideal del inductor; resistencia serie equivalente del capacitor; valores comerciales del PID; limitaciones de los amplificadores y del osciloscopio; y diferencias entre el escalón ideal y su aproximación con el generador de funciones.
 
 [Volver al contenido](#contenido)
 
