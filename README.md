@@ -1,3 +1,4 @@
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=l22212381-cyber/MSFP4)
 # Práctica 4 — Modelado y control del sistema endocrino
 
 Repositorio académico de la asignatura **Modelado de Sistemas Fisiológicos**, del programa de **Ingeniería Biomédica** del Tecnológico Nacional de México / Instituto Tecnológico de Tijuana. En esta práctica se desarrolla una **analogía eléctrica fenomenológica** del sistema endocrino para estudiar la secreción, el transporte, el almacenamiento temporal, la utilización y la respuesta de una señal hormonal mediante un circuito de segundo orden.
